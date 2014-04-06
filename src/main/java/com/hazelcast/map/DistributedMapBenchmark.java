@@ -34,9 +34,9 @@ public class DistributedMapBenchmark {
         mapConfig.setStatisticsEnabled(false);
 
         Config config = new Config();
-        config.setProperty(GroupProperties.PROP_GENERIC_OPERATION_THREAD_COUNT,"2");
-        config.setProperty(GroupProperties.PROP_PARTITION_OPERATION_THREAD_COUNT,"2");
-        config.setProperty(GroupProperties.PROP_IO_THREAD_COUNT,"1");
+        //config.setProperty(GroupProperties.PROP_GENERIC_OPERATION_THREAD_COUNT,"2");
+        //config.setProperty(GroupProperties.PROP_PARTITION_OPERATION_THREAD_COUNT,"2");
+        //config.setProperty(GroupProperties.PROP_IO_THREAD_COUNT,"1");
         //config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         //config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
         //config.getNetworkConfig().getJoin().getTcpIpConfig().addMember("192.168.1.107");
