@@ -4,7 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.TearDown;
 @OperationsPerInvocation(LocalAtomicLongBenchmark.OPERATIONS_PER_INVOCATION)
 public class LocalAtomicLongBenchmark {
 
-    public static final long OPERATIONS_PER_INVOCATION = 500000;
+    public static final int OPERATIONS_PER_INVOCATION = 500000;
 
     private HazelcastInstance hz;
     private IAtomicLong atomicLong;
@@ -33,21 +33,21 @@ public class LocalAtomicLongBenchmark {
         Hazelcast.shutdownAll();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void setPerformance() {
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
             atomicLong.set(k);
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void getAndSetPerformance() {
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
             atomicLong.getAndSet(k);
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void getPerformance() {
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
             atomicLong.get();

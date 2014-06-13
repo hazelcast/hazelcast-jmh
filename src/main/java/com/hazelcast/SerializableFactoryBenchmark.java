@@ -6,7 +6,7 @@ import com.hazelcast.nio.serialization.ArrayDataSerializableFactory;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.hazelcast.util.ConstructorFunction;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -45,7 +45,7 @@ public class SerializableFactoryBenchmark {
         unorderedCaseFactory = new UnorderedCaseFactory();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     @OperationsPerInvocation(100000000)
     public void performance_DataSerializableFactory() {
         int typeId = 0;
@@ -61,7 +61,7 @@ public class SerializableFactoryBenchmark {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     @OperationsPerInvocation(100000000)
     public void performance_orderedCase() {
         int typeId = 0;
@@ -77,7 +77,7 @@ public class SerializableFactoryBenchmark {
         }
     }
 
-//    @GenerateMicroBenchmark
+//    @Benchmark
 //    @OperationsPerInvocation(100000000)
 //    public void performance_unorderedCase() {
 //        int typeId = 0;

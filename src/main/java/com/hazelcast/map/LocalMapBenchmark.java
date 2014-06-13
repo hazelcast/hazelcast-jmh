@@ -30,7 +30,7 @@ import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -47,7 +47,7 @@ import static com.hazelcast.Util.randomString;
 @OperationsPerInvocation(LocalMapBenchmark.OPERATIONS_PER_INVOCATION)
 public class LocalMapBenchmark {
 
-    public static final long OPERATIONS_PER_INVOCATION = 500000;
+    public static final int OPERATIONS_PER_INVOCATION = 500000;
 
     private HazelcastInstance hz;
     private IMap<Integer, String> map;
@@ -87,7 +87,7 @@ public class LocalMapBenchmark {
         Hazelcast.shutdownAll();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void putPerformance() {
         Random random = new Random();
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
@@ -97,7 +97,7 @@ public class LocalMapBenchmark {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void setPerformance() {
         Random random = new Random();
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
@@ -107,7 +107,7 @@ public class LocalMapBenchmark {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void getPerformance() {
         Random random = new Random();
         for (int k = 0; k < OPERATIONS_PER_INVOCATION; k++) {
