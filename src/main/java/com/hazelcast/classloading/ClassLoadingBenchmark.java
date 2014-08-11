@@ -18,7 +18,7 @@ package com.hazelcast.classloading;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.nio.ClassLoaderUtil;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
@@ -54,7 +54,7 @@ public class ClassLoadingBenchmark {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public Class<?>[] executeClassLoadingWithExternalClassLoader()
             throws Exception {
 
@@ -68,7 +68,7 @@ public class ClassLoadingBenchmark {
         return result;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public Class<?>[] executeClassLoading()
             throws Exception {
 
