@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Random;
 
 @State(Scope.Benchmark)
-@Fork(jvmArgsPrepend = {"-Xmx10G"})
+@Fork(jvmArgsPrepend = {"-Xmx25G"})
 @OperationsPerInvocation(OnheapSlabBenchmark.OPERATIONS_PER_INVOCATION)
 public class OnheapSlabBenchmark {
 
@@ -90,7 +90,7 @@ public class OnheapSlabBenchmark {
     @Benchmark
     public long testInternal() {
         long h = 0;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 70000; i++) {
             byte[] entity = buildEntity();
             map.put(i, entity);
             byte[] e = map.get(i);
