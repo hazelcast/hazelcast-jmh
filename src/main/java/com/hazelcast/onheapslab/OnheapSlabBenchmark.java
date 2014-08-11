@@ -19,7 +19,8 @@ package com.hazelcast.onheapslab;
 import com.hazelcast.nio.BufferObjectDataOutput;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
-import com.hazelcast.nio.serialization.DataSerializable;
+import com.hazelcast.nio.serialization.DataSerializableFactory;
+import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.hazelcast.nio.serialization.SerializationService;
 import com.hazelcast.nio.serialization.SerializationServiceBuilder;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -38,11 +39,11 @@ import java.util.Map;
 import java.util.Random;
 
 @State(Scope.Benchmark)
-@Fork(jvmArgsPrepend = {"-Xmx25G"})
+@Fork(jvmArgsPrepend = {"-Xmx25G", "-Xms15G", "-XX:+UseTLAB", "-XX:+AlwaysPreTouch"})
 @OperationsPerInvocation(OnheapSlabBenchmark.OPERATIONS_PER_INVOCATION)
 public class OnheapSlabBenchmark {
 
-    public static final int OPERATIONS_PER_INVOCATION = 10000;
+    public static final int OPERATIONS_PER_INVOCATION = 3221200;
 
     //27487790
 
@@ -57,7 +58,9 @@ public class OnheapSlabBenchmark {
 
     @Setup(Level.Trial)
     public void benchmarkSetup() {
-        serializationService = new SerializationServiceBuilder().setAllowUnsafe(true).setUseNativeByteOrder(true).build();
+        serializationService = new SerializationServiceBuilder()
+                .addDataSerializableFactory(1000, new EntityDataSerializableFactory())
+                .setAllowUnsafe(true).setUseNativeByteOrder(true).build();
         map = createMap();
     }
 
@@ -76,9 +79,9 @@ public class OnheapSlabBenchmark {
     public Map<Integer, byte[]> createMap() {
         Map<Integer, byte[]> map;
         if ("SLAB".equals(type)) {
-            map = new SlapMap<Integer>(false);
+            map = new SlapMap(false, OPERATIONS_PER_INVOCATION + 100);
         } else if ("OFFHEAP".equals(type)) {
-            map = new SlapMap<Integer>(true);
+            map = new SlapMap(true, OPERATIONS_PER_INVOCATION + 100);
         } else if ("JDK".equals(type)) {
             map = new HashMap<Integer, byte[]>();
         } else {
@@ -90,11 +93,11 @@ public class OnheapSlabBenchmark {
     @Benchmark
     public long testInternal() {
         long h = 0;
-        for (int i = 0; i < 70000; i++) {
+        for (int i = 0; i < OPERATIONS_PER_INVOCATION; i++) {
             byte[] entity = buildEntity();
             map.put(i, entity);
             byte[] e = map.get(i);
-            h += e.hashCode();
+            h += e.length;
         }
         return h;
     }
@@ -127,7 +130,7 @@ public class OnheapSlabBenchmark {
     }
 
     private static final class Entity
-            implements DataSerializable {
+            implements IdentifiedDataSerializable {
 
         private byte[] foo;
 
@@ -147,6 +150,24 @@ public class OnheapSlabBenchmark {
             foo = new byte[length];
             objectDataInput.readFully(foo);
         }
+
+        @Override
+        public int getFactoryId() {
+            return 1000;
+        }
+
+        @Override
+        public int getId() {
+            return 1000;
+        }
     }
 
+    private static final class EntityDataSerializableFactory
+            implements DataSerializableFactory {
+
+        @Override
+        public IdentifiedDataSerializable create(int typeId) {
+            return new Entity();
+        }
+    }
 }
