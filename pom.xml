@@ -11,7 +11,7 @@
 
 
     <properties>
-        <hazelcast.version>3.2.3-SNAPSHOT</hazelcast.version>
+        <hazelcast.version>3.2.4</hazelcast.version>
         <jmh.version>0.9</jmh.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
