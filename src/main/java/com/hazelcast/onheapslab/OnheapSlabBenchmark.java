@@ -32,6 +32,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.infra.BenchmarkParams;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,28 +41,35 @@ import java.util.Random;
 
 @State(Scope.Benchmark)
 @Fork(jvmArgsPrepend = {"-Xmx25G", "-Xms15G", "-XX:+UseTLAB", "-XX:+AlwaysPreTouch"})
-@OperationsPerInvocation(OnheapSlabBenchmark.OPERATIONS_PER_INVOCATION)
+@OperationsPerInvocation(OnheapSlabBenchmark.DEFAULT_OPERATIONS_PER_INVOCATION)
 public class OnheapSlabBenchmark {
 
-    public static final int OPERATIONS_PER_INVOCATION = 3221200;
-
-    //27487790
+    public static final int DEFAULT_OPERATIONS_PER_INVOCATION = 3221200;
+    public static final int DEFAULT_NO_OF_SEGMENTS = 6;
+    public static final int DEFAULT_CAPACITY_PER_SEGMENT = 1024 * 1024 * 1024;
 
     private final Random random = new Random();
 
     private SerializationService serializationService;
 
-    @Param(value = {"JDK", "SLAB", "OFFHEAP"})
+    @Param(value = {"SLAB", "OFFHEAP", "JDK"})
     private String type;
 
     private Map<Integer, byte[]> map;
 
+    int opsPerInvocation;
+
     @Setup(Level.Trial)
-    public void benchmarkSetup() {
+    public void benchmarkSetup(BenchmarkParams params) {
         serializationService = new SerializationServiceBuilder()
                 .addDataSerializableFactory(1000, new EntityDataSerializableFactory())
                 .setAllowUnsafe(true).setUseNativeByteOrder(true).build();
         map = createMap();
+        if (params != null) {
+            opsPerInvocation = params.getOpsPerInvocation();
+        } else {
+            opsPerInvocation = DEFAULT_OPERATIONS_PER_INVOCATION;
+        }
     }
 
     @TearDown(Level.Trial)
@@ -79,9 +87,9 @@ public class OnheapSlabBenchmark {
     public Map<Integer, byte[]> createMap() {
         Map<Integer, byte[]> map;
         if ("SLAB".equals(type)) {
-            map = new SlapMap(false, OPERATIONS_PER_INVOCATION + 100);
+            map = new SlapMap(false, opsPerInvocation + 100, getNoOfSegmets(), getCapacityOfSegment());
         } else if ("OFFHEAP".equals(type)) {
-            map = new SlapMap(true, OPERATIONS_PER_INVOCATION + 100);
+            map = new SlapMap(true, opsPerInvocation + 100, getNoOfSegmets(), getCapacityOfSegment());
         } else if ("JDK".equals(type)) {
             map = new HashMap<Integer, byte[]>();
         } else {
@@ -90,10 +98,18 @@ public class OnheapSlabBenchmark {
         return map;
     }
 
+    private int getNoOfSegmets() {
+        return Integer.getInteger("noOfSegments", DEFAULT_NO_OF_SEGMENTS);
+    }
+
+    private int getCapacityOfSegment() {
+        return Integer.getInteger("capacityOfSegment", DEFAULT_CAPACITY_PER_SEGMENT);
+    }
+
     @Benchmark
     public long testInternal() {
         long h = 0;
-        for (int i = 0; i < OPERATIONS_PER_INVOCATION; i++) {
+        for (int i = 0; i < opsPerInvocation; i++) {
             byte[] entity = buildEntity();
             map.put(i, entity);
             byte[] e = map.get(i);
@@ -105,7 +121,7 @@ public class OnheapSlabBenchmark {
     public static void main(String[] args) {
         OnheapSlabBenchmark benchmark = new OnheapSlabBenchmark();
         benchmark.type = "SLAB";
-        benchmark.benchmarkSetup();
+        benchmark.benchmarkSetup(null);
         for (int i = 0; i < 100; i++) {
             benchmark.testInternal();
             benchmark.teardown();
