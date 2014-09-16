@@ -74,11 +74,9 @@ public class OnheapSlabBenchmark {
 
     @TearDown(Level.Trial)
     public void benchmarkTeardown() {
-        /*
         if (map instanceof SlapMap) {
             ((SlapMap) map).destroy();
         }
-        */
     }
 
     @TearDown(Level.Iteration)
@@ -87,8 +85,7 @@ public class OnheapSlabBenchmark {
     }
 
     public Map<Integer, byte[]> createMap() {
-        Map<Integer, byte[]> map = null;
-        /*
+        Map<Integer, byte[]> map;
         if ("SLAB".equals(type)) {
             map = new SlapMap(false, opsPerInvocation + 100, getNoOfSegmets(), getCapacityOfSegment());
         } else if ("OFFHEAP".equals(type)) {
@@ -98,7 +95,6 @@ public class OnheapSlabBenchmark {
         } else {
             throw new RuntimeException("Unknown map type");
         }
-        */
         return map;
     }
 
