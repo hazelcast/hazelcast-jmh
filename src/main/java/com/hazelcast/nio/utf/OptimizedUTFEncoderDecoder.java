@@ -132,7 +132,12 @@ public final class OptimizedUTFEncoderDecoder {
             // We save current position of buffer data output.
             // Then we write the length of UTF to here
             final int pos = bufferObjectDataOutput.position();
-            bufferObjectDataOutput.position(pos + 3);
+
+            // Moving position explicitly is not good way
+            // since it may cause overflow exceptions for example "ByteArrayObjectDataOutput".
+            // So, write dummy data and let DataOutput handle it by expanding or etc ...
+            bufferObjectDataOutput.writeShort(0);
+            bufferObjectDataOutput.writeBoolean(false);
 
             if (buffer.length >= maxUtfLength) {
                 for (i = beginIndex; i < endIndex; i++) {
