@@ -44,7 +44,7 @@ public class UtfSerializationBenchmark {
     private byte[][] utf_encoder_decoder_samples = new byte[SAMPLES][];
     private byte[][] optimized_utf_encoder_decoder_samples = new byte[SAMPLES][];
 
-    @Param(value = {    "8", "16", "32", "64", "128", "256", 
+    @Param(value = {    "8", "16", "32", "64", "128", "256",
                         "512", "1024", "2048", "4096", "8192" })
     private String size;
 
