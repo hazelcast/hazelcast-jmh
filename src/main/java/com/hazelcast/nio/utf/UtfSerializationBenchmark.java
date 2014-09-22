@@ -53,7 +53,6 @@ public class UtfSerializationBenchmark {
         SerializationService ss = createSerializationService();
         BufferObjectDataOutput out = ss.createObjectDataOutput(BUFFER_SIZE);
         for (int i = 0; i < SAMPLES; i++) {
-            // size between 16 and 8k
             String str = 
                     RandomStringUtils.randomAlphanumeric(Integer.parseInt(size));
             strings[i] = str;
